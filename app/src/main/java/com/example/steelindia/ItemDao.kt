@@ -3,122 +3,172 @@ package com.example.steelindia
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.example.steelindia.ItemDatabaseHelper.Companion.COL_ID
+import android.util.Log
+import kotlin.Exception
 
-object ItemDao {
-private lateinit var db : SQLiteDatabase
+object ItemDAO {
+
+    private lateinit  var  dbHelper : SQLiteDatabase
 
     fun init(context: Context) {
         synchronized(this) {
-            if (!ItemDao::db.isInitialized) {
-                ItemDao.db = ItemDatabaseHelper(context).writableDatabase
+            if (!ItemDAO::dbHelper.isInitialized) {
+                ItemDAO.dbHelper = ItemDatabaseHelper(context).writableDatabase
             }
         }
     }
 
-    fun closeDb() {
-       ItemDao.db.close()
-    }
-    fun addItem(itemId : String , itemName : String , itemType : String ,
-                itemPrice : Int , itemQuantity : Int , itemDesign : String , itemPolish : String) : Long{
-        val values = ContentValues().apply {
-            put(DatabaseHelper.COL_ID, itemId)
-            put(ItemDatabaseHelper.COL_NAME, itemName)
-            put(ItemDatabaseHelper.COL_TYPE, itemType)
-            put(ItemDatabaseHelper.COL_PRICE, itemPrice)
-            put(ItemDatabaseHelper.COL_QUANTITY, itemQuantity)
-            put(ItemDatabaseHelper.COL_DESIGN, itemDesign)
-            put(ItemDatabaseHelper.COL_POLISH, itemPolish)
+    fun getItem(itemId: Long): Item? {
+        try {
+        val db = dbHelper
+        val cursor = db.query(
+            ItemDatabaseHelper.TABLE_NAME,
+            null,
+            "${ItemDatabaseHelper.COL_ID}=?",
+            arrayOf(itemId.toString()),
+            null, null, null
+        )
 
-
-        }
-        return ItemDao.db.insert(ItemDatabaseHelper.TABLE_NAME , null, values)
-    }
-    fun upadeteItem(itemId : String , itemName : String , itemType : String ,
-                itemPrice : Int , itemQuantity : Int , itemDesign : String , itemPolish : String) : Long{
-
-    }
-    fun deleteItem(itemId : String , itemName : String , itemType : String ,
-                itemPrice : Int , itemQuantity : Int , itemDesign : String , itemPolish : String){
-        val deletedRows = db.delete(ItemDatabaseHelper.TABLE_NAME, COL_ID)
-
-        if (deletedRows > 0) {
-            // The record was successfully deleted
+        return if (cursor.moveToFirst()) {
+            val item = cursorToItem(cursor)
+            cursor.close()
+            item
         } else {
-            // Something went wrong or no records matched the condition
+            cursor.close()
+            null
         }
+    }
+        catch(e:Exception){
+            e.printStackTrace()
+            Log.e("ItemDao","Error In getItem Items")
+            return  null
+        }
+    }
+
+    fun updateItem(item: Item): Boolean? {
+        try{
+        val db = dbHelper
+        val values = contentValuesOfItem(item)
+
+        val rowsAffected = db.update(
+            ItemDatabaseHelper.TABLE_NAME,
+            values,
+            "${ItemDatabaseHelper.COL_ID}=?",
+            arrayOf(item.itemId.toString())
+        )
+
+        return rowsAffected > 0}
+        catch (e:Exception){
+            e.printStackTrace()
+            Log.e("ItemDao","Error In update Items")
+            return  null
+        }
+    }
+
+    fun deleteItem(itemId: Long): Boolean ?
+    {  try
+    {
+
+        val db = dbHelper
+
+        val rowsAffected = db.delete(
+            ItemDatabaseHelper.TABLE_NAME,
+            "${ItemDatabaseHelper.COL_ID}=?",
+            arrayOf(itemId.toString())
+        )
+
+        return rowsAffected > 0
+    }
+    catch (e:Exception){
+        e.printStackTrace()
+        Log.e("ItemDao","Error In Delete  Items")
+        return  null
+    }
+    }
+
+    fun addItem(item: Item): Long {
+        val db = dbHelper
+        val values = contentValuesOfItem(item)
+
+        return db.insert(ItemDatabaseHelper.TABLE_NAME, null, values)
+    }
+
+    fun getAllItems(): List<Item>?
+    {
+       try {
+
+           val db = dbHelper
+           val cursor = db.query(
+               ItemDatabaseHelper.TABLE_NAME,
+               null, null, null, null, null, null
+           )
+
+           val items = mutableListOf<Item>()
+
+           while (cursor.moveToNext()) {
+               items.add(cursorToItem(cursor))
+           }
+
+           cursor.close()
+           return items
+       }
+       catch (e:Exception){
+           e.printStackTrace()
+           Log.e("ItemDao","Error In Delete all Items")
+            return null
+       }
+
+    }
+
+    fun deleteAllItems() {
+       try {
+           val db = dbHelper
+           db.delete(ItemDatabaseHelper.TABLE_NAME, null, null)
+       }
+       catch (e:Exception) {
+           e.printStackTrace()
+           Log.e("ItemDao","Error In Delete all Items")
+       }
+
     }
 
 
     @SuppressLint("Range")
-    fun getItem(itemId : String, itemName : String, itemType : String,
-                itemPrice : Int, itemQuantity : Int, itemDesign : String, itemPolish : String){
-        val query = "SELECT * FROM ${ItemDatabaseHelper.TABLE_NAME} WHERE ${ItemDatabaseHelper.COL_ID} = ?"
-        val cursor = ItemDao.db.rawQuery(query, arrayOf(itemId))
-        val xyz : ItemDao.Item? = if(cursor.moveToFirst()){
-            Item (
-                cursor.getLong(cursor.getColumnIndex(ItemDatabaseHelper.COL_ID)),
-                cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_NAME)),
-                cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_TYPE)),
-                cursor.getFloat(cursor.getColumnIndex(ItemDatabaseHelper.COL_PRICE)),
-                cursor.getInt(cursor.getColumnIndex(ItemDatabaseHelper.COL_QUANTITY)),
-                cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_DESIGN)),
-                cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_POLISH))
+    private fun cursorToItem(cursor: Cursor): Item {
+        val id = cursor.getLong(cursor.getColumnIndex(ItemDatabaseHelper.COL_ID))
+        val name = cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_NAME))
+        val type = cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_TYPE))
+        val price = cursor.getDouble(cursor.getColumnIndex(ItemDatabaseHelper.COL_PRICE))
+        val quantity = cursor.getInt(cursor.getColumnIndex(ItemDatabaseHelper.COL_QUANTITY))
+        val design = cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_DESIGN))
+        val polish = cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_POLISH))
 
-            )
-
-
-    }
-        else {
-            null
-        }
-        cursor.close()
-        return xyz
-
-
+        return Item(id, name, type, price, quantity, design, polish)
     }
 
-    @SuppressLint("Range")
-    fun getAllItem(itemId : String , itemName : String , itemType : String ,
-                itemPrice : Int , itemQuantity : Int , itemDesign : String , itemPolish : String){
-        val query = "SELECT * FROM ${ItemDatabaseHelper.TABLE_NAME} "
-        val cursor = ItemDao.db.rawQuery(query, arrayOf(itemId))
-        val item: ItemDao.Item? = if (cursor.moveToFirst()) {
-            Item(
-                cursor.getLong(cursor.getColumnIndex(ItemDatabaseHelper.COL_ID)),
-                cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_NAME)),
-                cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_TYPE)),
-                cursor.getFloat(cursor.getColumnIndex(ItemDatabaseHelper.COL_PRICE)),
-                cursor.getInt(cursor.getColumnIndex(ItemDatabaseHelper.COL_QUANTITY)),
-                cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_DESIGN)),
-                cursor.getString(cursor.getColumnIndex(ItemDatabaseHelper.COL_POLISH))
-
-            )
-        } else {
-            null
-        }
-        cursor.close()
-        return item
-
+    private fun contentValuesOfItem(item: Item): ContentValues {
+        val values = ContentValues()
+        values.put(ItemDatabaseHelper.COL_ID, item.itemId)
+        values.put(ItemDatabaseHelper.COL_NAME, item.itemName)
+        values.put(ItemDatabaseHelper.COL_TYPE, item.itemType)
+        values.put(ItemDatabaseHelper.COL_PRICE, item.itemPrice)
+        values.put(ItemDatabaseHelper.COL_QUANTITY, item.itemQuantity)
+        values.put(ItemDatabaseHelper.COL_DESIGN, item.itemDesign)
+        values.put(ItemDatabaseHelper.COL_POLISH, item.itemPolish)
+        return values
     }
-    fun deleteAllItem(itemId : String , itemName : String , itemType : String ,
-                itemPrice : Float , itemQuantity : Int , itemDesign : String , itemPolish : String){
-        val query = "DELETE FROM " + ItemDatabaseHelper.TABLE_NAME
+}
 
 
-    }
 
-//TODO
-//
-// datebase helper id ,name , type , price , quantity , design , polish
- data class Item(
+data class Item(
     val itemId: Long,
     val itemName: String,
     val itemType: String,
-    val itemPrice: Float,
+    val itemPrice: Double,
     val itemQuantity: Int,
     val itemDesign: String,
     val itemPolish: String
 )
-}
