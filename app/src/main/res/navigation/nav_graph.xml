@@ -37,7 +37,12 @@
         android:id="@+id/itemFragment"
         android:name="com.example.steelindia.ItemFragment"
         android:label="fragment_item"
-        tools:layout="@layout/fragment_item" />
-
+        tools:layout="@layout/fragment_item" >
+        <argument
+            android:name="itemID"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+<!-- TODO arguments passing -->
 
 </navigation>

@@ -15,12 +15,15 @@ class ItemFragment : Fragment() {
     private lateinit var viewModel: ItemViewModel
     private lateinit var binding: FragmentItemBinding
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         viewModel = ViewModelProvider(this).get(ItemViewModel::class.java)
         binding=FragmentItemBinding.inflate(layoutInflater)
+
         return binding.root
 
     }
