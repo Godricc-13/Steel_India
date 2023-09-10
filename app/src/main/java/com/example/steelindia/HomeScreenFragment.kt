@@ -64,16 +64,16 @@ class HomeScreen : Fragment() {
     fun getallitems(){
         viewModel.getallitems()
     }
-    fun getitem(){
-        viewModel.getitem()
+    fun getitem(itemId: Long){
+        viewModel.getitem(itemId)
     }
-    fun upadateitem(){
-        viewModel.updateitem()
+    fun upadateitem(item: Item){
+        viewModel.updateitem(item)
     }
-    fun deleteitem(){
-        viewModel.deleteitem()
+    fun deleteitem(itemId: Long){
+        viewModel.deleteitem(itemId)
     }
-    fun additem(){
-        viewModel.additem()
+    fun additem(item: Item){
+        viewModel.additem(item)
     }
 }

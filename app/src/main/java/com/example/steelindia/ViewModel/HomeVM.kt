@@ -2,6 +2,7 @@ package com.example.steelindia.ViewModel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.example.steelindia.Item
 import com.example.steelindia.ItemDAO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,25 +27,25 @@ class HomeVM : ViewModel() {
             ItemDAO.getAllItems()
         }
     }
-    fun getitem(){
+    fun getitem(itemId: Long){
         coroutineScope.launch {
-            ItemDAO.getItem()
+            ItemDAO.getItem(itemId)
         }
     }
-    fun updateitem(){
+    fun updateitem(item: Item){
         coroutineScope.launch {
-            ItemDAO.updateItem()
+            ItemDAO.updateItem(item)
         }
 
     }
-    fun deleteitem(){
+    fun deleteitem(itemId: Long){
         coroutineScope.launch {
-            ItemDAO.deleteItem()
+            ItemDAO.deleteItem(itemId )
         }
     }
-    fun additem(){
+    fun additem(item: Item){
         coroutineScope.launch {
-            ItemDAO.addItem()
+            ItemDAO.addItem(item)
         }
     }
 }
