@@ -29,7 +29,15 @@
         <action
             android:id="@+id/action_homeScreen_to_MainFragment"
             app:destination="@id/MainFragment" />
+        <action
+            android:id="@+id/action_homeScreen_to_itemFragment"
+            app:destination="@id/itemFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/itemFragment"
+        android:name="com.example.steelindia.ItemFragment"
+        android:label="fragment_item"
+        tools:layout="@layout/fragment_item" />
 
 
 </navigation>
