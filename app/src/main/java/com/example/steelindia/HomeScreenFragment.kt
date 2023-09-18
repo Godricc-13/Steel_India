@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.steelindia.ViewModel.HomeVM
 import com.example.steelindia.databinding.FragmentHomeScreenBinding
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class HomeScreen : Fragment() {
@@ -24,6 +25,7 @@ class HomeScreen : Fragment() {
     private var itemList = ArrayList<Item>()
     private lateinit var listView : RecyclerView
     private lateinit var viewModel: HomeVM
+    private lateinit var addButton : FloatingActionButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,8 +38,10 @@ class HomeScreen : Fragment() {
         viewModel.init(requireContext())
         listView = binding.listView
 
+        addButton = binding.addfloatingActionButton
 
-        val adapter = ItemAdapter(itemList)
+
+        val adapter = ItemAdapter(itemList, createItemClickListener())
         listView.layoutManager = LinearLayoutManager(requireContext())
         listView.adapter = adapter
 
@@ -45,10 +49,15 @@ class HomeScreen : Fragment() {
 
         binding.btnLogout.setOnClickListener {
             val editor = MyPreferences.edit()
-            editor.putLong("loginId", -1)
+            editor.putLong("loginId", -1L)
             editor.apply()
 
             val action = HomeScreenDirections.actionHomeScreenToMainFragment()
+            findNavController().navigate(action)
+        }
+
+        addButton.setOnClickListener {
+            val action = HomeScreenDirections.actionHomeScreenToItemFragment()
             findNavController().navigate(action)
         }
 
@@ -75,5 +84,14 @@ class HomeScreen : Fragment() {
     }
     fun additem(item: Item){
         viewModel.additem(item)
+    }
+
+    private fun createItemClickListener() : ItemClickListener {
+        return object : ItemClickListener {
+            override fun onItemClick(itemId: Long) {
+                val action = HomeScreenDirections.actionHomeScreenToItemFragment(itemId)
+                findNavController().navigate(action)
+            }
+        }
     }
 }

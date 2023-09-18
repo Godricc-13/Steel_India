@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 
-    class ItemAdapter(private val list: ArrayList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
+    class ItemAdapter(private val list: ArrayList<Item> , val itemClickListener: ItemClickListener) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val name: TextView = itemView.findViewById(R.id.tvName)
@@ -27,9 +27,13 @@ import androidx.recyclerview.widget.RecyclerView
             holder.name.text = currentItemData.itemName
             holder.price.text = currentItemData.itemPrice.toString()
             holder.quantity.text = currentItemData.itemQuantity.toString()
+            holder.itemView.setOnClickListener{itemClickListener.onItemClick(currentItemData.itemId)}
         }
 
         override fun getItemCount(): Int {
             return list.size
         }
     }
+interface ItemClickListener{
+    fun onItemClick(itemId: Long)
+}
