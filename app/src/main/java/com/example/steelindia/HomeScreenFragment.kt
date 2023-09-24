@@ -44,8 +44,15 @@ class HomeScreen : Fragment() {
         val adapter = ItemAdapter(itemList, createItemClickListener())
         listView.layoutManager = LinearLayoutManager(requireContext())
         listView.adapter = adapter
+        getallitems()
 
 
+        viewModel.itemList.observe(viewLifecycleOwner){
+            if(it != null){
+                adapter.list= it as ArrayList<Item>
+                adapter.notifyDataSetChanged()
+            }
+        }
 
         binding.btnLogout.setOnClickListener {
             val editor = MyPreferences.edit()

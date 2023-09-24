@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 
-    class ItemAdapter(private val list: ArrayList<Item> , val itemClickListener: ItemClickListener) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
+    class ItemAdapter( var list: ArrayList<Item> , val itemClickListener: ItemClickListener) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val name: TextView = itemView.findViewById(R.id.tvName)

@@ -1,6 +1,7 @@
 package com.example.steelindia.ViewModel
 
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.steelindia.Item
 import com.example.steelindia.ItemDAO
@@ -10,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class HomeVM : ViewModel() {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
+    val itemList : MutableLiveData<List<Item>?> = MutableLiveData()
 
     fun init(context:Context){
 
@@ -24,7 +25,9 @@ class HomeVM : ViewModel() {
     }
     fun getallitems(){
         coroutineScope.launch {
-            ItemDAO.getAllItems()
+            val list = ItemDAO.getAllItems()
+            itemList.postValue(list)
+
         }
     }
     fun getitem(itemId: Long){

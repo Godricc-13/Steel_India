@@ -8,19 +8,21 @@ import kotlinx.coroutines.launch
 
 class ItemViewModel : ViewModel() {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    val updateItem : MutableLiveData<Item?> = MutableLiveData<Item?>()
+    val mutableitem : MutableLiveData<Item?> = MutableLiveData()
+    val itemAdded : MutableLiveData<Boolean> = MutableLiveData(false)
 
     // TODO: Implement the ViewModel
    // add functions
     fun getitem(itemId: Long){
         coroutineScope.launch {
            val item = ItemDAO.getItem(itemId)
-            updateItem.postValue(item)
+            mutableitem.postValue(item)
         }
     }
     fun updateitem(item: Item){
         coroutineScope.launch {
             ItemDAO.updateItem(item)
+            itemAdded.postValue(true)
         }
 
     }
@@ -32,6 +34,7 @@ class ItemViewModel : ViewModel() {
     fun additem(item: Item){
         coroutineScope.launch {
             ItemDAO.addItem(item)
+           itemAdded.postValue(true)
         }
     }
 }
