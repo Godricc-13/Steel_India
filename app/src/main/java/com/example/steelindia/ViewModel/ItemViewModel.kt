@@ -1,6 +1,8 @@
-package com.example.steelindia
+package com.example.steelindia.ViewModel
 
 import androidx.lifecycle.ViewModel
+import com.example.steelindia.Item
+import com.example.steelindia.ItemDAO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +24,7 @@ class ItemViewModel : ViewModel() {
     }
     fun deleteitem(itemId: Long){
         coroutineScope.launch {
-            ItemDAO.deleteItem(itemId )
+            ItemDAO.deleteItem(itemId)
         }
     }
     fun additem(item: Item){
