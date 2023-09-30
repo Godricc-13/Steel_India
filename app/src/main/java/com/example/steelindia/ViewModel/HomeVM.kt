@@ -3,6 +3,7 @@ package com.example.steelindia.ViewModel
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.steelindia.DAO
 import com.example.steelindia.Item
 import com.example.steelindia.ItemDAO
 import kotlinx.coroutines.CoroutineScope
@@ -13,10 +14,10 @@ class HomeVM : ViewModel() {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val itemList : MutableLiveData<List<Item>?> = MutableLiveData()
 
-    fun init(context:Context){
-
+    fun init(context:Context ){
         ItemDAO.init(context)
     }
+
     fun deleteAllItems(){
         coroutineScope.launch {
             ItemDAO.deleteAllItems()

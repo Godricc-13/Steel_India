@@ -36,6 +36,7 @@
         <action
             android:id="@+id/action_homeScreen_to_itemFragment"
             app:destination="@id/itemFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/itemFragment"

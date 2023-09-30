@@ -35,6 +35,7 @@ class HomeScreen : Fragment() {
         binding = FragmentHomeScreenBinding.inflate(layoutInflater)
         MyPreferences = requireContext().getSharedPreferences("My_Prefs", Context.MODE_PRIVATE)
         viewModel=ViewModelProvider(this)[HomeVM::class.java]
+        val userId = arguments?.getLong("userId")
         viewModel.init(requireContext())
         listView = binding.listView
 
@@ -53,6 +54,8 @@ class HomeScreen : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         }
+
+        
 
         binding.btnLogout.setOnClickListener {
             val editor = MyPreferences.edit()
