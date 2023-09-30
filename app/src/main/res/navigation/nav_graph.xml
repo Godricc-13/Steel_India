@@ -16,7 +16,9 @@
             app:destination="@id/registerFragment" />
         <action
             android:id="@+id/action_MainFragment_to_homeScreen"
-            app:destination="@id/homeScreen" />
+            app:destination="@id/homeScreen"
+            app:popUpTo="@id/MainFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -28,7 +30,9 @@
         android:label="HomeScreen" >
         <action
             android:id="@+id/action_homeScreen_to_MainFragment"
-            app:destination="@id/MainFragment" />
+            app:destination="@id/MainFragment"
+            app:popUpTo="@id/homeScreen"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_homeScreen_to_itemFragment"
             app:destination="@id/itemFragment" />
